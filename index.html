@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#3157d5" />
+  <meta name="description" content="โปรแกรมสุ่มอเนกประสงค์ สุ่มตัวเลข รายชื่อ รายการ แบ่งกลุ่ม คำตอบ และลูกเต๋า" />
+  <title>โปรแกรมสุ่ม | Randomizer Tool</title>
+  <style>
+    :root{
+      --ink:#192540;--muted:#72809a;--line:#e5eaf3;--blue:#3157d5;--blue2:#2448bb;
+      --blue-soft:#eef2ff;--green:#16845b;--green-soft:#e9f7f0;--red:#c14f5d;
+      --surface:#fff;--bg:#f4f6fb;--shadow:0 16px 44px rgba(31,51,104,.08);--radius:20px
+    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;color:var(--ink);background:radial-gradient(circle at 8% 0%,rgba(84,119,238,.12),transparent 28rem),radial-gradient(circle at 100% 12%,rgba(79,190,160,.09),transparent 24rem),var(--bg);font-family:"Leelawadee UI","Noto Sans Thai",Tahoma,sans-serif}
+    button,input,textarea,select{font:inherit}button{-webkit-tap-highlight-color:transparent;cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none!important;transform:none!important}
+    .shell{width:min(1160px,calc(100% - 34px));margin:0 auto;padding:28px 0 30px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:13px}.brand-mark{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#5278ed,#294dc3);box-shadow:0 8px 18px rgba(49,87,213,.24)}
+    .brand-mark svg{width:26px;height:26px}.brand h1{font-size:clamp(23px,3vw,31px);line-height:1.2;margin:0;letter-spacing:-.02em}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.icon-btn,.small-btn{border:1px solid var(--line);background:#fff;color:#53617d;border-radius:12px;min-height:39px;padding:0 12px;font-size:12px;font-weight:800}.icon-btn:hover,.small-btn:hover{background:#f7f8fc}
+    .mode-wrap{margin-bottom:17px}.mode-label{font-size:13px;font-weight:850;margin:0 0 10px;color:#445271}.mode-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .mode-card{border:1px solid var(--line);background:rgba(255,255,255,.86);border-radius:16px;min-height:88px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#586680;font-size:12px;font-weight:850;transition:.16s;box-shadow:0 4px 15px rgba(25,43,90,.02)}
+    .mode-card .ico{width:27px;height:27px;display:grid;place-items:center;color:var(--blue)}.mode-card svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .mode-card.active{background:#fff;border-color:#aab9f4;color:var(--blue);box-shadow:0 7px 20px rgba(49,87,213,.10);transform:translateY(-1px)}.mode-card:hover{border-color:#b7c4ef}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}.stat{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:16px;padding:13px 16px;box-shadow:0 4px 18px rgba(25,43,90,.025)}.stat-label{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:4px}.stat-value{font-size:24px;line-height:1.15;font-weight:900;font-variant-numeric:tabular-nums}.stat-value.blue{color:var(--blue)}.stat-value.green{color:var(--green)}
+    .layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:stretch}.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.setup{padding:21px}.main-panel{padding:22px;display:flex;flex-direction:column;min-width:0}
+    .section-title{font-size:16px;font-weight:900;margin:0 0 6px;display:flex;align-items:center;gap:8px}.section-title .dot{width:8px;height:8px;border-radius:50%;background:var(--blue)}.helper{margin:0 0 16px;color:var(--muted);font-size:12px;line-height:1.65}.field{margin-bottom:13px}label{display:block;font-size:12px;font-weight:800;color:#4b5874;margin:0 0 7px}
+    input,textarea,select{width:100%;border:1px solid #dce2ef;border-radius:12px;background:#fbfcff;color:var(--ink);padding:11px 12px;outline:none;transition:border .18s,box-shadow .18s}input{min-height:44px;font-size:15px;font-weight:700}textarea{min-height:160px;resize:vertical;line-height:1.65;font-size:14px}select{min-height:43px;font-size:13px;font-weight:700}
+    input:focus,textarea:focus,select:focus{border-color:#8299ee;box-shadow:0 0 0 4px rgba(49,87,213,.10)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}.preview{background:#f6f8ff;border:1px dashed #cbd5f5;border-radius:12px;padding:10px 12px;margin:2px 0 14px}.preview span{display:block;color:var(--muted);font-size:11px;font-weight:750;margin-bottom:3px}.preview strong{font-size:13px;color:#344c9d}.hint{color:var(--muted);font-size:11px;line-height:1.55;margin:-3px 0 12px}
+    .shared-options{border-top:1px solid #eef0f6;margin-top:15px;padding-top:14px}.option-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.option-row label{margin:0}.toggle{display:flex;align-items:center;gap:8px;color:#586680;font-size:12px;font-weight:750}.toggle input{width:17px;height:17px;min-height:auto;accent-color:var(--blue);margin:0}.batch-wrap{display:flex;align-items:center;justify-content:space-between;gap:10px}.batch-wrap label{margin:0}.batch-wrap select{width:105px;min-height:37px;padding:6px 9px}
+    .setup-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}.primary,.secondary,.success-btn,.danger-lite{border:0;border-radius:12px;min-height:44px;padding:0 13px;font-weight:850;font-size:12px;transition:transform .15s,box-shadow .15s,background .15s}.primary{color:#fff;background:linear-gradient(135deg,#4169e1,#2d50c6);box-shadow:0 7px 16px rgba(49,87,213,.18)}.primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 20px rgba(49,87,213,.24)}.secondary{color:#53617d;background:#f1f3f8;border:1px solid #e6e9f1}.secondary:hover:not(:disabled){background:#e9edf6}.success-btn{color:#fff;background:linear-gradient(135deg,#19966a,#117a55);box-shadow:0 7px 16px rgba(22,132,91,.15)}.danger-lite{color:var(--red);background:#fff3f4;border:1px solid #f4d9dc}
+    .draw-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.live-pill{color:var(--green);background:var(--green-soft);border-radius:999px;padding:6px 10px;font-size:10px;font-weight:900;white-space:nowrap}.result-card{min-height:250px;margin:5px 0 14px;border-radius:18px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(145deg,#f1f5ff,#f8faff 55%,#eef4ff);border:1px solid #e2e9ff;padding:20px 16px}.result-card:before,.result-card:after{content:"";position:absolute;border-radius:50%;border:1px solid rgba(75,106,213,.10);pointer-events:none}.result-card:before{width:240px;height:240px;right:-85px;top:-145px}.result-card:after{width:190px;height:190px;left:-75px;bottom:-120px}.result-label{position:relative;z-index:1;color:#7181af;font-size:12px;font-weight:850}.result-main{position:relative;z-index:1;color:var(--blue);font-size:clamp(50px,9vw,88px);line-height:1.18;font-weight:950;letter-spacing:-.04em;text-shadow:0 7px 18px rgba(49,87,213,.10);overflow-wrap:anywhere;max-width:100%}.result-main.textual{font-size:clamp(25px,5vw,43px);line-height:1.35;letter-spacing:0;padding:0 8px}.result-note{position:relative;z-index:1;color:#8190b5;font-size:12px;margin-top:7px}.result-items{position:relative;z-index:1;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin-top:9px;max-width:100%}.result-chip{border:1px solid #d8e2ff;background:#fff;color:#3652af;padding:8px 12px;border-radius:11px;font-weight:850;font-size:14px;max-width:100%;overflow-wrap:anywhere}.result-chip.large{font-size:19px;padding:10px 15px}.die{width:47px;height:47px;border:1px solid #d9e2ff;background:#fff;border-radius:12px;display:grid;place-items:center;font-size:22px;font-weight:900;color:#3157d5;box-shadow:0 4px 12px rgba(49,87,213,.08)}.sum-pill{font-size:14px;color:#fff;background:var(--blue);padding:7px 13px;border-radius:999px;font-weight:900;margin-top:9px}.wheel-wrap{position:relative;z-index:1;width:min(290px,76vw);aspect-ratio:1;margin:6px auto 2px}.wheel-wrap:before{content:"";position:absolute;z-index:2;top:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:26px solid #263d89;filter:drop-shadow(0 3px 2px rgba(0,0,0,.18))}.wheel-canvas{width:100%;height:100%;display:block;border-radius:50%;box-shadow:0 8px 24px rgba(39,61,137,.16);transform:rotate(0deg);}.ordered-list{position:relative;z-index:1;width:100%;max-height:210px;overflow:auto;text-align:left;display:flex;flex-direction:column;gap:6px;margin-top:10px}.ordered-row{display:flex;align-items:flex-start;gap:9px;background:#fff;border:1px solid #dce5ff;border-radius:9px;padding:7px 10px;color:#40517b;font-size:12px}.ordered-row b{color:#3157d5;min-width:22px}.saved-panel{margin:0 0 16px;padding:14px 16px;display:grid;grid-template-columns:minmax(160px,1fr) minmax(160px,1fr) auto auto auto;gap:8px;align-items:end}.saved-panel .field{margin:0}.saved-panel label{margin-bottom:5px}.saved-panel input,.saved-panel select{min-height:39px;font-size:12px;padding:8px 10px}.saved-panel button{min-height:39px;white-space:nowrap}.import-hint{font-size:10px;color:var(--muted);grid-column:1/-1;margin:-1px 0 0}.groups-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;max-height:210px;overflow:auto;margin-top:12px;text-align:left}.group-card{border:1px solid #dce5ff;background:rgba(255,255,255,.9);border-radius:12px;padding:10px}.group-card h4{margin:0 0 7px;color:#3157d5;font-size:12px}.group-card ol{margin:0;padding-left:20px;color:#43516e;font-size:12px;line-height:1.6}
+    .draw-actions{display:grid;grid-template-columns:1.1fr 1fr .8fr;gap:9px}.draw-actions button{min-width:0;padding-inline:8px}.message{min-height:21px;margin:11px 2px 0;color:var(--muted);font-size:11px;line-height:1.55}.message.success{color:var(--green);font-weight:800}.message.error{color:var(--red);font-weight:800}
+    .lower{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.list-panel{padding:18px 20px;min-height:150px}.list-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.list-heading h2{font-size:14px;margin:0;font-weight:900}.count-badge{color:#64718c;background:#f1f3f8;border-radius:999px;padding:4px 9px;font-size:10px;font-weight:850;white-space:nowrap}.chips{display:flex;flex-wrap:wrap;gap:7px;max-height:170px;overflow:auto;padding:1px 3px 3px 1px}.chip{min-width:32px;min-height:30px;padding:5px 9px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;background:#f3f6ff;border:1px solid #e4eaff;color:#4960ad;font-size:11px;font-weight:850;overflow-wrap:anywhere}.chip.text{justify-content:flex-start;max-width:100%;white-space:normal;text-align:left}.empty{color:#9aa4b8;font-size:12px;padding:5px 0}.history-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}.undo-btn{min-height:32px;padding:0 9px;border-radius:9px;color:#5146a5;background:#f0efff;border:1px solid #dedbff;font-size:10px;font-weight:850;white-space:nowrap}.history{display:flex;flex-direction:column;gap:8px;max-height:240px;overflow:auto}.history-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:8px;border-bottom:1px solid #f0f2f7;color:#53617d;font-size:11px}.history-row:last-child{border:0;padding-bottom:0}.history-row strong{display:block;color:var(--green);font-size:12px;text-align:right;overflow-wrap:anywhere;max-width:70%}.history-sub{display:block;color:#929db1;font-size:10px;margin-top:3px}.footer{margin-top:21px;text-align:center;color:#8b96ab;font-size:11px;line-height:1.8}.footer strong{color:#56637e;font-weight:850}
+    dialog{width:min(430px,calc(100% - 30px));border:1px solid var(--line);border-radius:20px;padding:0;color:var(--ink);box-shadow:0 24px 80px rgba(18,31,68,.24)}dialog::backdrop{background:rgba(19,30,58,.46);backdrop-filter:blur(3px)}.dialog-inner{padding:23px}.dialog-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;color:#5146a5;background:#f0efff;font-size:22px;margin-bottom:13px}.dialog-inner h2{margin:0 0 7px;font-size:18px}.dialog-inner p{margin:0;color:var(--muted);font-size:13px;line-height:1.65;overflow-wrap:anywhere}.dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px}.dialog-actions button{min-height:43px}
+    .pop{animation:pop .42s cubic-bezier(.2,.8,.2,1)}@keyframes pop{0%{transform:scale(.7);opacity:.25}70%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+    .shake{animation:shake .11s linear 5}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#1f2c49;color:#fff;padding:10px 15px;border-radius:12px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);transition:.22s;z-index:20}.toast.show{opacity:1;transform:translate(-50%,0)}
+    [hidden]{display:none!important}
+    @media(max-width:930px){.mode-grid{grid-template-columns:repeat(4,1fr)}.layout{grid-template-columns:320px minmax(0,1fr)}.saved-panel{grid-template-columns:1fr 1fr 1fr}.saved-panel .field:first-child{grid-column:span 1}.import-hint{grid-column:1/-1}}
+    @media(max-width:760px){.layout{grid-template-columns:1fr}.main-panel{order:1}.setup{order:2}.lower{grid-template-columns:1fr}.mode-grid{grid-template-columns:repeat(4,1fr)}.saved-panel{grid-template-columns:1fr 1fr}.saved-panel .field:first-child{grid-column:1/-1}.import-hint{grid-column:1/-1}}
+    @media(max-width:520px){.shell{width:calc(100% - 20px);padding:17px 0 25px}.topbar{align-items:flex-start}.brand-mark{width:42px;height:42px;border-radius:14px}.brand p{font-size:10px}.top-actions{gap:5px}.icon-btn{min-height:34px;padding:0 8px;font-size:10px}.mode-grid{grid-template-columns:repeat(2,1fr);gap:7px}.mode-card{min-height:76px;font-size:11px;border-radius:13px}.stats{gap:7px}.stat{padding:10px;border-radius:13px}.stat-label{font-size:9px}.stat-value{font-size:20px}.setup,.main-panel{padding:15px}.result-card{min-height:220px}.draw-actions{grid-template-columns:1fr 1fr}.draw-actions #cancelBtn{grid-column:1/-1}.list-panel{padding:15px}.groups-grid{grid-template-columns:1fr 1fr}.setup-actions{grid-template-columns:1fr 1fr}.saved-panel{padding:12px;gap:7px}.saved-panel button{font-size:10px;padding:0 8px}.top-actions{justify-content:flex-start}.wheel-wrap{width:min(255px,72vw)}}
+    @media print{body{background:#fff}.shell{width:100%;padding:0}.top-actions,.mode-wrap,.saved-panel,.setup,.draw-actions,.message,.shared-options,.undo-btn,.footer{display:none!important}.layout{display:block}.main-panel,.panel,.list-panel{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.lower{grid-template-columns:1fr 1fr}.result-card{min-height:150px}.history{max-height:none}.chips{max-height:none}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 8l8 8M16 8l-8 8M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+      <div><h1>โปรแกรมสุ่ม</h1><p>เครื่องมือสุ่มอเนกประสงค์ · RANDOMIZER TOOL</p></div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="importBtn" type="button" title="นำเข้ารายการจาก Excel/CSV">⇧ นำเข้า</button>
+      <button class="icon-btn" id="exportListBtn" type="button" title="ส่งออกรายการเปิดด้วย Excel ได้">⇩ รายการ</button>
+      <button class="icon-btn" id="exportBtn" type="button" title="ส่งออกประวัติการสุ่ม">⇩ ผลสุ่ม</button>
+      <button class="icon-btn" id="printBtn" type="button" title="พิมพ์ผลการสุ่ม">▤ พิมพ์</button>
+      <button class="icon-btn" id="fullscreenBtn" type="button" title="เต็มหน้าจอ">⛶ เต็มจอ</button>
+    </div>
+  </header>
+  <input id="importFile" type="file" accept=".xlsx,.csv,.txt,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/plain" hidden />
+
+  <section class="mode-wrap">
+    <h2 class="mode-label">เลือกประเภทเครื่องมือสุ่ม</h2>
+    <div class="mode-grid" role="group" aria-label="ประเภทเครื่องมือสุ่ม">
+      <button class="mode-card active" data-mode="numbers" type="button"><span class="ico"><svg viewBox="0 0 24 24"><path d="M8 4 6 20M18 4l-2 16M4 9h16M3 15h16"/></svg></span>สุ่มตัวเลข</button>
+      <button class="mode-card" data-mode="names" type="button"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 2.7-5.5 6.5-5.5s6 2 6.5 5.5M17 8.5a3 3 0 0 1 0 5.8M17 15.5c2.7.3 4.2 1.8 4.5 4.5"/></svg></span>สุ่มรายชื่อ</button>
+      <button class="mode-card" data-mode="items" type="button"><span class="ico"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>สุ่มรายการ</button>
+      <button class="mode-card" data-mode="wheel" type="button"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle cx="12" cy="12" r="2"/></svg></span>วงล้อสุ่ม</button>
+      <button class="mode-card" data-mode="shuffle" type="button"><span class="ico"><svg viewBox="0 0 24 24"><path d="m16 3 4 4-4 4M4 7h3c4 0 6 10 10 10h3M16 14l4 3-4 4M4 17h3c1.5 0 2.6-1.1 3.5-2.5"/></svg></span>สุ่มเรียงลำดับ</button>
+      <button class="mode-card" data-mode="groups" type="button"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20c.4-3.1 2.4-5 6-5s5.6 1.9 6 5M14 15c3.8-.8 7 1.1 7.5 5"/></svg></span>สุ่มแบ่งกลุ่ม</button>
+      <button class="mode-card" data-mode="yesno" type="button"><span class="ico"><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/><path d="M4 5h4M4 19h4"/></svg></span>สุ่มคำตอบ</button>
+      <button class="mode-card" data-mode="dice" type="button"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1" fill="currentColor"/><circle cx="16" cy="8" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="8" cy="16" r="1" fill="currentColor"/><circle cx="16" cy="16" r="1" fill="currentColor"/></svg></span>ลูกเต๋า</button>
+    </div>
+  </section>
+
+  <section class="panel saved-panel" aria-label="จัดการชุดข้อมูล">
+    <div class="field"><label for="saveSetName">ชื่อชุดข้อมูลที่ต้องการบันทึก</label><input id="saveSetName" type="text" maxlength="60" placeholder="เช่น คำถามทบทวนบทเรียน" /></div>
+    <div class="field"><label for="savedSetSelect">ชุดข้อมูลที่บันทึกไว้</label><select id="savedSetSelect"><option value="">— ยังไม่มีชุดข้อมูล —</option></select></div>
+    <button class="primary" id="saveSetBtn" type="button">บันทึกชุดนี้</button>
+    <button class="secondary" id="loadSetBtn" type="button" disabled>เรียกใช้</button>
+    <button class="danger-lite" id="deleteSetBtn" type="button" disabled>ลบชุด</button>
+    <p class="import-hint">นำเข้าไฟล์ Excel (.xlsx), CSV, TXT หรือ TSV · ส่งออกรายการและผลสุ่มเป็น CSV UTF-8 เปิดใน Excel ได้</p>
+  </section>
+
+  <section class="stats" aria-label="สรุปผลการสุ่ม">
+    <div class="stat"><div class="stat-label" id="statLabel1">จำนวนทั้งหมด</div><div class="stat-value" id="statValue1">20</div></div>
+    <div class="stat"><div class="stat-label" id="statLabel2">คงเหลือ</div><div class="stat-value blue" id="statValue2">20</div></div>
+    <div class="stat"><div class="stat-label" id="statLabel3">บันทึกผลแล้ว</div><div class="stat-value green" id="statValue3">0</div></div>
+  </section>
+
+  <section class="layout">
+    <aside class="panel setup">
+      <h2 class="section-title"><span class="dot"></span><span id="setupTitle">ตั้งค่าการสุ่มตัวเลข</span></h2>
+      <p class="helper" id="setupHelper">กำหนดช่วงตัวเลขที่ต้องการสุ่ม</p>
+
+      <div id="numbersConfig">
+        <div class="two-col">
+          <div class="field"><label for="numberStart">เลขเริ่มต้น</label><input id="numberStart" type="number" value="1" step="1" /></div>
+          <div class="field"><label for="numberEnd">เลขสิ้นสุด</label><input id="numberEnd" type="number" value="20" step="1" /></div>
+        </div>
+        <div class="preview"><span>ช่วงตัวเลข</span><strong id="numberPreview">1 ถึง 20 · 20 ตัว</strong></div>
+      </div>
+
+      <div id="textConfig" hidden>
+        <div class="field"><label id="textInputLabel" for="textInput">รายการข้อมูล</label><textarea id="textInput" spellcheck="false" placeholder="พิมพ์หรือวางข้อมูล หนึ่งรายการต่อหนึ่งบรรทัด"></textarea></div>
+        <p class="hint" id="textHint">หนึ่งบรรทัดต่อหนึ่งรายการ ระบบจะไม่นับบรรทัดว่าง</p>
+        <div class="preview"><span>จำนวนรายการที่ตรวจพบ</span><strong id="textPreview">0 รายการ</strong></div>
+      </div>
+
+      <div id="groupsConfig" hidden>
+        <div class="field"><label for="groupInput">รายชื่อสมาชิก</label><textarea id="groupInput" spellcheck="false" placeholder="สมชาย ใจดี&#10;สมหญิง รักเรียน&#10;สมศักดิ์ ขยันดี"></textarea></div>
+        <p class="hint">หนึ่งบรรทัดต่อหนึ่งคน รองรับชื่อและนามสกุลที่มีช่องว่าง</p>
+        <div class="field"><label for="groupCount">จำนวนกลุ่ม</label><input id="groupCount" type="number" min="2" max="30" value="4" /></div>
+        <div class="preview"><span>จำนวนสมาชิก</span><strong id="groupPreview">0 คน · 4 กลุ่ม</strong></div>
+      </div>
+
+      <div id="yesnoConfig" hidden>
+        <div class="field"><label for="choiceOne">ตัวเลือกที่ 1</label><input id="choiceOne" value="ใช่" maxlength="80" /></div>
+        <div class="field"><label for="choiceTwo">ตัวเลือกที่ 2</label><input id="choiceTwo" value="ไม่ใช่" maxlength="80" /></div>
+        <p class="hint">ระบบจะสุ่มระหว่างตัวเลือกทั้งสอง โดยสามารถสุ่มซ้ำได้ตามปกติ</p>
+      </div>
+
+      <div id="diceConfig" hidden>
+        <div class="two-col">
+          <div class="field"><label for="diceCount">จำนวนลูกเต๋า</label><select id="diceCount"><option value="1">1 ลูก</option><option value="2">2 ลูก</option><option value="3">3 ลูก</option><option value="4">4 ลูก</option><option value="5">5 ลูก</option><option value="6">6 ลูก</option><option value="7">7 ลูก</option><option value="8">8 ลูก</option><option value="9">9 ลูก</option><option value="10">10 ลูก</option></select></div>
+          <div class="field"><label for="diceSides">จำนวนหน้า</label><select id="diceSides"><option value="4">4 หน้า</option><option value="6" selected>6 หน้า</option><option value="8">8 หน้า</option><option value="10">10 หน้า</option><option value="12">12 หน้า</option><option value="20">20 หน้า</option><option value="100">100 หน้า</option></select></div>
+        </div>
+        <div class="preview"><span>รูปแบบลูกเต๋า</span><strong id="dicePreview">1 ลูก · 6 หน้า</strong></div>
+      </div>
+
+      <div class="shared-options" id="sharedOptions">
+        <div class="option-row" id="repeatOption"><label class="toggle" for="allowRepeat"><input id="allowRepeat" type="checkbox" /> อนุญาตให้สุ่มซ้ำ</label><span class="hint" style="margin:0">ปิด = ไม่ซ้ำ</span></div>
+        <div class="batch-wrap" id="batchOption"><label for="batchCount">จำนวนผลลัพธ์ต่อครั้ง</label><select id="batchCount"><option value="1">1 รายการ</option><option value="2">2 รายการ</option><option value="3">3 รายการ</option><option value="4">4 รายการ</option><option value="5">5 รายการ</option><option value="10">10 รายการ</option><option value="20">20 รายการ</option></select></div>
+      </div>
+
+      <div class="setup-actions">
+        <button class="primary" id="createBtn" type="button">สร้างชุดข้อมูล</button>
+        <button class="secondary" id="resetBtn" type="button">เริ่มชุดนี้ใหม่</button>
+      </div>
+    </aside>
+
+    <section class="panel main-panel">
+      <div class="draw-head">
+        <div><h2 class="section-title">ผลลัพธ์การสุ่ม</h2><p class="helper" id="drawHelper">กดปุ่มสุ่มเพื่อเริ่มต้น</p></div>
+        <span class="live-pill">● พร้อมใช้งาน</span>
+      </div>
+      <div class="result-card" id="resultCard" aria-live="polite" aria-atomic="true">
+        <div class="result-label" id="resultLabel">ผลการสุ่ม</div>
+        <div class="result-main" id="resultMain">พร้อมสุ่ม</div>
+        <div class="result-items" id="resultItems"></div>
+        <div class="result-note" id="resultNote">เลือกประเภทและตั้งค่าการสุ่มทางด้านซ้าย</div>
+      </div>
+      <div class="draw-actions">
+        <button class="primary" id="drawBtn" type="button">สุ่มเลย</button>
+        <button class="success-btn" id="commitBtn" type="button" disabled>บันทึกผลลัพธ์</button>
+        <button class="secondary" id="cancelBtn" type="button" disabled>ยกเลิกผล</button>
+      </div>
+      <p class="message" id="message" role="status">ตั้งค่ารายการ แล้วกดสุ่มเพื่อดูผลลัพธ์</p>
+    </section>
+  </section>
+
+  <section class="lower">
+    <div class="panel list-panel" id="poolPanel">
+      <div class="list-heading"><h2 id="poolTitle">รายการที่มีให้สุ่ม</h2><span class="count-badge" id="poolBadge">20 รายการ</span></div>
+      <div class="chips" id="poolList"><span class="chip">1</span></div>
+    </div>
+    <div class="panel list-panel">
+      <div class="list-heading"><h2>ประวัติการสุ่ม</h2><div class="history-tools"><span class="count-badge" id="historyBadge">0 รายการ</span><button class="undo-btn" id="undoBtn" type="button" disabled>↶ ย้อนกลับ</button></div></div>
+      <div class="history" id="historyList"><div class="empty">ยังไม่มีประวัติการสุ่ม</div></div>
+    </div>
+  </section>
+  <footer class="footer">โปรแกรมสุ่มอเนกประสงค์ · RANDOMIZER TOOL<br><strong>พัฒนาโดย Ntnksai</strong><br>โรงเรียนวัดแคทราย(บุญประชาสรรค์)</footer>
+</main>
+
+<dialog id="confirmDialog" aria-labelledby="dialogTitle" aria-describedby="dialogText"><div class="dialog-inner"><div class="dialog-icon" id="dialogIcon">↶</div><h2 id="dialogTitle">ยืนยันการย้อนกลับ</h2><p id="dialogText">ต้องการย้อนกลับผลการสุ่มล่าสุดใช่หรือไม่?</p><div class="dialog-actions"><button class="secondary" id="dialogCancel" type="button">ยกเลิก</button><button class="primary" id="dialogConfirm" type="button">ยืนยัน</button></div></div></dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  'use strict';
+  const KEY = 'randomizer-tool-v3';
+  const OLD_KEY = 'classroom-seat-picker-v2';
+  const $ = id => document.getElementById(id);
+  const modeInfo = {
+    numbers:{title:'ตั้งค่าการสุ่มตัวเลข',helper:'กำหนดช่วงตัวเลขที่ต้องการสุ่ม',noun:'ตัวเลข',pool:'ตัวเลขที่มีให้สุ่ม'},
+    names:{title:'ตั้งค่าการสุ่มรายชื่อ',helper:'ใส่หนึ่งรายชื่อต่อหนึ่งบรรทัด รองรับชื่อและนามสกุล',noun:'รายชื่อ',pool:'รายชื่อที่มีให้สุ่ม'},
+    items:{title:'ตั้งค่าการสุ่มรายการ',helper:'ใส่หัวข้อ สิ่งของ คำถาม หรือรายการใด ๆ หนึ่งรายการต่อหนึ่งบรรทัด',noun:'รายการ',pool:'รายการที่มีให้สุ่ม'},
+    wheel:{title:'ตั้งค่าวงล้อสุ่ม',helper:'ใส่ตัวเลือกหนึ่งรายการต่อหนึ่งบรรทัด แล้วหมุนวงล้อเพื่อเลือกผลลัพธ์',noun:'ตัวเลือก',pool:'ตัวเลือกในวงล้อ'},
+    shuffle:{title:'ตั้งค่าการสุ่มเรียงลำดับ',helper:'ใส่รายการที่ต้องการสลับลำดับใหม่ หนึ่งรายการต่อหนึ่งบรรทัด',noun:'รายการ',pool:'รายการต้นฉบับ'},
+    groups:{title:'ตั้งค่าการสุ่มแบ่งกลุ่ม',helper:'ใส่รายชื่อสมาชิก แล้วกำหนดจำนวนกลุ่มที่ต้องการ',noun:'สมาชิก',pool:'สมาชิกทั้งหมด'},
+    yesno:{title:'ตั้งค่าการสุ่มคำตอบ',helper:'กำหนดตัวเลือก 2 ตัวเลือก แล้วสุ่มคำตอบได้ไม่จำกัดครั้ง',noun:'ตัวเลือก',pool:'ตัวเลือกคำตอบ'},
+    dice:{title:'ตั้งค่าการทอยลูกเต๋า',helper:'เลือกจำนวนลูกเต๋าและจำนวนหน้าของลูกเต๋า',noun:'ลูกเต๋า',pool:'จำนวนหน้า'}
+  };
+  const state = {
+    mode:'numbers', allowRepeat:false, batch:1, savedSets:[],
+    sessions:{
+      numbers:{start:1,end:20,original:[],pool:[],history:[],pending:null,last:null},
+      names:{source:'',original:[],pool:[],history:[],pending:null,last:null},
+      items:{source:'',original:[],pool:[],history:[],pending:null,last:null},
+      wheel:{source:'',original:[],pool:[],history:[],pending:null,last:null},
+      shuffle:{source:'',original:[],pool:[],history:[],pending:null,last:null},
+      groups:{source:'',groupCount:4,original:[],pool:[],history:[],pending:null,last:null},
+      yesno:{one:'ใช่',two:'ไม่ใช่',history:[],pending:null,last:null},
+      dice:{count:1,sides:6,history:[],pending:null,last:null}
+    }
+  };
+  // Start with a ready-to-use number range, matching the previous version's default.
+  const defaultNumberItems = Array.from({length:20},(_,i)=>({id:`num-${i+1}`,value:i+1,index:i}));
+  state.sessions.numbers.original = defaultNumberItems;
+  state.sessions.numbers.pool = defaultNumberItems.slice();
+  let confirmAction = null;
+  let toastTimer = null;
+  const modeCards = [...document.querySelectorAll('.mode-card')];
+  const textModes = new Set(['names','items','wheel','shuffle']);
+  const poolModes = new Set(['numbers','names','items','wheel']);
+  const byId = id => $(id);
+  function clone(obj){return JSON.parse(JSON.stringify(obj));}
+  function escapeHtml(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+  function parseLines(text){return String(text||'').split(/\r\n|\n|\r/).map(x=>x.trim()).filter(Boolean);}
+  function makeItems(values,prefix){return values.map((value,index)=>({id:`${prefix}-${index}-${Math.random().toString(36).slice(2,7)}`,value,index}));}
+  function randomInt(max){
+    if(max<=1)return 0;
+    if(window.crypto&&crypto.getRandomValues){const buf=new Uint32Array(1);const limit=Math.floor(0x100000000/max)*max;let n;do{crypto.getRandomValues(buf);n=buf[0];}while(n>=limit);return n%max;}
+    return Math.floor(Math.random()*max);
+  }
+  function shuffle(list){const a=list.slice();for(let i=a.length-1;i>0;i--){const j=randomInt(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function sample(list,count,repeat){if(!list.length)return[];if(repeat)return Array.from({length:count},()=>list[randomInt(list.length)]);return shuffle(list).slice(0,Math.min(count,list.length));}
+  function active(){return state.sessions[state.mode];}
+  function notify(text){const t=$('toast');t.textContent=text;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2300);}
+  function message(text,type=''){const el=$('message');el.textContent=text;el.className='message'+(type?' '+type:'');}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){/* Local storage can be disabled by the browser. */}}
+  function sessionValid(s,mode){
+    if(!s||!Array.isArray(s.history))return false;
+    if(poolModes.has(mode)||mode==='shuffle')return Array.isArray(s.original)&&Array.isArray(s.pool)&&s.original.every(x=>x&&typeof x.id==='string')&&s.pool.every(x=>x&&typeof x.id==='string');
+    return true;
+  }
+  function migrateOld(){
+    try{
+      const raw=localStorage.getItem(OLD_KEY);if(!raw)return false;const old=JSON.parse(raw);if(!old||!old.sessions)return false;
+      const n=old.sessions.numbers;if(n&&Number.isSafeInteger(n.start)&&Number.isInteger(n.count)&&n.count>0&&n.count<=5000){
+        const all=Array.from({length:n.count},(_,i)=>({id:`numbers-${i}`,value:n.start+i,index:i}));
+        const lookup=new Map(all.map(x=>[x.value,x]));const remaining=(n.remaining||[]).map(v=>lookup.get(v)).filter(Boolean);const drawn=(n.drawn||[]).map(v=>lookup.get(v)).filter(Boolean);
+        if(remaining.length+drawn.length===all.length){state.sessions.numbers={start:n.start,end:n.start+n.count-1,original:all,pool:remaining,history:drawn.map((x,i)=>({type:'draw',items:[x],label:`ผลลัพธ์ ${x.value}`,time:Date.now()+i,removed:true})),pending:n.current?{type:'draw',items:[lookup.get(n.current)].filter(Boolean)}:null,last:null};
+        }
+      }
+      const p=old.sessions.names;if(p&&typeof p.sourceNames==='string'){const names=parseLines(p.sourceNames);const all=makeItems(names,'names');const used=new Set((p.drawn||[]).map(x=>x.value));const drawn=all.filter(x=>used.has(x.value));const pool=all.filter(x=>!used.has(x.value));state.sessions.names={source:p.sourceNames,original:all,pool,history:drawn.map((x,i)=>({type:'draw',items:[x],label:x.value,time:Date.now()+i,removed:true})),pending:null,last:null};}
+      return true;
+    }catch(e){return false;}
+  }
+  function load(){
+    try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);const validModes=['numbers','names','items','wheel','shuffle','groups','yesno','dice'];if(d&&d.sessions&&validModes.includes(d.mode)){
+      // Preserve V3.0 sessions while adding the two new V3.5 modes.
+      Object.keys(state.sessions).forEach(m=>{if(!d.sessions[m])d.sessions[m]=clone(state.sessions[m]);});
+      if(Object.keys(state.sessions).every(m=>sessionValid(d.sessions[m],m))){Object.assign(state,d);if(!Array.isArray(state.savedSets))state.savedSets=[];state.savedSets=state.savedSets.filter(x=>x&&typeof x.id==='string'&&typeof x.name==='string'&&modeInfo[x.mode]&&x.config);return;}
+    }}}catch(e){}
+    if(migrateOld())save();
+  }
+  function setMode(mode){if(!state.sessions[mode])return;state.mode=mode;modeCards.forEach(b=>{const on=b.dataset.mode===mode;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});syncSetup();message(`เลือก${modeInfo[mode].noun}แล้ว`);render();if(mode==='wheel'&&active().pending&&!active().pending.wheelDone)startWheelAnimation();}
+  function setVisible(id,show){$(id).hidden=!show;}
+  function syncSetup(){
+    const m=state.mode,s=active();$('setupTitle').textContent=modeInfo[m].title;$('setupHelper').textContent=modeInfo[m].helper;
+    setVisible('numbersConfig',m==='numbers');setVisible('textConfig',textModes.has(m));setVisible('groupsConfig',m==='groups');setVisible('yesnoConfig',m==='yesno');setVisible('diceConfig',m==='dice');
+    if(m==='numbers'){$('numberStart').value=s.start;$('numberEnd').value=s.end;updateNumberPreview();}
+    if(textModes.has(m)){$('textInputLabel').textContent=m==='names'?'รายชื่อ':m==='wheel'?'ตัวเลือกในวงล้อ':m==='shuffle'?'รายการที่ต้องการเรียงลำดับ':'รายการข้อความ';$('textInput').placeholder=m==='names'?'สมชาย ใจดี\nสมหญิง รักเรียน\nสมศักดิ์ ขยันดี':m==='wheel'?'รางวัลที่ 1\nรางวัลที่ 2\nรางวัลที่ 3':m==='shuffle'?'งานที่ 1\nงานที่ 2\nงานที่ 3':'คำถามเรื่องระบบสุริยะ\nลูกฟุตบอล\nสีฟ้า';$('textHint').textContent=m==='names'?'หนึ่งบรรทัดต่อหนึ่งคน รองรับชื่อและนามสกุลที่มีช่องว่าง':m==='wheel'?'หนึ่งบรรทัดต่อหนึ่งตัวเลือก วงล้อจะสุ่มเลือกจากรายการที่กำหนด':'หนึ่งบรรทัดต่อหนึ่งรายการ สามารถใส่ข้อความได้ตามต้องการ';$('textInput').value=s.source;updateTextPreview();}
+    if(m==='groups'){$('groupInput').value=s.source;$('groupCount').value=s.groupCount;updateGroupPreview();}
+    if(m==='yesno'){$('choiceOne').value=s.one;$('choiceTwo').value=s.two;}
+    if(m==='dice'){$('diceCount').value=s.count;$('diceSides').value=s.sides;updateDicePreview();}
+    const flexible=poolModes.has(m);setVisible('sharedOptions',m!=='groups'&&m!=='shuffle');setVisible('repeatOption',flexible);setVisible('batchOption',(flexible&&m!=='wheel')||m==='yesno');$('allowRepeat').checked=state.allowRepeat;$('allowRepeat').disabled=!flexible;$('batchCount').value=state.batch;$('batchCount').disabled=!((flexible&&m!=='wheel')||m==='yesno');
+    $('createBtn').textContent=m==='numbers'?'สร้างชุดตัวเลข':m==='names'?'สร้างชุดรายชื่อ':m==='items'?'สร้างชุดรายการ':m==='wheel'?'สร้างวงล้อสุ่ม':m==='shuffle'?'เตรียมรายการ':m==='groups'?'เตรียมรายชื่อและกลุ่ม':m==='yesno'?'บันทึกตัวเลือก':'บันทึกการตั้งค่าลูกเต๋า';
+    $('resetBtn').textContent='เริ่มชุดนี้ใหม่';
+    $('drawBtn').textContent=m==='groups'?'สุ่มแบ่งกลุ่ม':m==='wheel'?'หมุนวงล้อ':m==='shuffle'?'สุ่มเรียงลำดับ':m==='dice'?'ทอยลูกเต๋า':m==='yesno'?'สุ่มคำตอบ':'สุ่มเลย';
+  }
+  function updateNumberPreview(){const a=Number($('numberStart').value),b=Number($('numberEnd').value);$('numberPreview').textContent=Number.isSafeInteger(a)&&Number.isSafeInteger(b)&&b>=a&&b-a<=4999?`${a.toLocaleString('th-TH')} ถึง ${b.toLocaleString('th-TH')} · ${(b-a+1).toLocaleString('th-TH')} ตัว`:'กรุณาตรวจสอบช่วงตัวเลข (ไม่เกิน 5,000 ตัว)';}
+  function updateTextPreview(){const n=parseLines($('textInput').value).length;$('textPreview').textContent=`${n.toLocaleString('th-TH')} ${state.mode==='names'?'รายชื่อ':state.mode==='wheel'?'ตัวเลือก': 'รายการ'}`;}
+  function updateGroupPreview(){const n=parseLines($('groupInput').value).length, g=Number($('groupCount').value)||0;$('groupPreview').textContent=`${n.toLocaleString('th-TH')} คน · ${g.toLocaleString('th-TH')} กลุ่ม`;}
+  function updateDicePreview(){ $('dicePreview').textContent=`${$('diceCount').value} ลูก · ${$('diceSides').value} หน้า`; }
+  function createSet(){
+    const m=state.mode,s=active();
+    if(m==='numbers'){
+      const start=Number($('numberStart').value),end=Number($('numberEnd').value);if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||end<start||end-start>4999||!Number.isSafeInteger(end)){message('กรุณากำหนดช่วงตัวเลขให้ถูกต้อง และมีจำนวนไม่เกิน 5,000 ตัว','error');return;}
+      const items=Array.from({length:end-start+1},(_,i)=>({id:`num-${start+i}`,value:start+i,index:i}));state.sessions.numbers={start,end,original:items,pool:items.slice(),history:[],pending:null,last:null};message(`สร้างชุดตัวเลข ${start} ถึง ${end} เรียบร้อยแล้ว`,'success');
+    }else if(textModes.has(m)){
+      const source=$('textInput').value,lines=parseLines(source);if(!lines.length){message('กรุณาเพิ่มอย่างน้อย 1 รายการ โดยใส่หนึ่งรายการต่อหนึ่งบรรทัด','error');return;}if(m==='wheel'&&lines.length>40){message('วงล้อรองรับไม่เกิน 40 ตัวเลือก เพื่อให้อ่านข้อความบนวงล้อได้ชัดเจน','error');return;}
+      const prefix=m==='names'?'name':m==='wheel'?'wheel':m==='shuffle'?'order':'item';const items=makeItems(lines,prefix);state.sessions[m]={source,original:items,pool:items.slice(),history:[],pending:null,last:null};message(`เตรียม${m==='names'?'รายชื่อ':m==='wheel'?'ตัวเลือกในวงล้อ':m==='shuffle'?'รายการสำหรับเรียงลำดับ':'รายการ'} ${items.length} รายการเรียบร้อยแล้ว`,'success');
+    }else if(m==='groups'){
+      const source=$('groupInput').value,lines=parseLines(source),count=Number($('groupCount').value);if(!lines.length){message('กรุณาเพิ่มรายชื่อสมาชิกอย่างน้อย 1 คน','error');return;}if(!Number.isInteger(count)||count<2||count>30){message('จำนวนกลุ่มต้องอยู่ระหว่าง 2 ถึง 30 กลุ่ม','error');return;}
+      const items=makeItems(lines,'member');state.sessions.groups={source,groupCount:count,original:items,pool:items.slice(),history:[],pending:null,last:null};message(`เตรียมสมาชิก ${items.length} คน สำหรับ ${count} กลุ่มแล้ว`,'success');
+    }else if(m==='yesno'){
+      const one=$('choiceOne').value.trim(),two=$('choiceTwo').value.trim();if(!one||!two||one===two){message('กรุณากรอกตัวเลือก 2 แบบที่ไม่ซ้ำกัน','error');return;}state.sessions.yesno={one,two,history:[],pending:null,last:null};message('บันทึกตัวเลือกเรียบร้อยแล้ว','success');
+    }else if(m==='dice'){
+      const count=Number($('diceCount').value),sides=Number($('diceSides').value);state.sessions.dice={count,sides,history:[],pending:null,last:null};message('บันทึกการตั้งค่าลูกเต๋าเรียบร้อยแล้ว','success');
+    }
+    render();
+  }
+  function draw(){
+    const m=state.mode,s=active();if(s.pending){message('กรุณาบันทึกหรือยกเลิกผลลัพธ์ก่อนสุ่มครั้งใหม่','error');return;}
+    if(m==='wheel'){
+      const source=state.allowRepeat?s.original:s.pool;if(!source.length){message('ไม่มีตัวเลือกเหลือในวงล้อ กรุณาเริ่มชุดใหม่หรือเปิดโหมดสุ่มซ้ำ','error');return;}
+      const index=randomInt(source.length),picked=source[index];s.pending={type:'wheel',items:[picked],removed:!state.allowRepeat,wheelOptions:source.map(x=>String(x.value)),wheelIndex:index,wheelDone:false};message('วงล้อกำลังหมุน รอผลลัพธ์แล้วกดบันทึก','success');
+    }else if(poolModes.has(m)){
+      const source=state.allowRepeat?s.original:s.pool;if(!source.length){message('ไม่มีรายการเหลือให้สุ่มแล้ว กรุณาเริ่มชุดใหม่หรือเปิดโหมดสุ่มซ้ำ','error');return;}
+      const count=Math.max(1,Math.min(20,Number(state.batch)||1));const picked=sample(source,count,state.allowRepeat);if(!picked.length){message('ไม่พบรายการสำหรับสุ่ม','error');return;}
+      s.pending={type:'draw',items:picked,removed:!state.allowRepeat};message(`สุ่มได้ ${picked.length} ${m==='numbers'?'ตัว':m==='names'?'รายชื่อ':'รายการ'} ตรวจสอบผลแล้วกดบันทึกผลลัพธ์`,'success');
+    }else if(m==='shuffle'){
+      if(!s.original.length){message('กรุณาเตรียมรายการก่อนสุ่มเรียงลำดับ','error');return;}
+      s.pending={type:'shuffle',items:shuffle(s.original)};message(`สลับลำดับ ${s.pending.items.length} รายการแล้ว กดบันทึกผลลัพธ์เพื่อเก็บลำดับนี้`,'success');
+    }else if(m==='yesno'){
+      const count=Math.max(1,Math.min(20,Number(state.batch)||1));const options=[s.one,s.two];s.pending={type:'choices',items:Array.from({length:count},()=>options[randomInt(2)])};message('สุ่มคำตอบแล้ว กดบันทึกผลลัพธ์เพื่อเก็บไว้ในประวัติ','success');
+    }else if(m==='dice'){
+      const dice=Array.from({length:s.count},()=>randomInt(s.sides)+1);s.pending={type:'dice',dice,sum:dice.reduce((a,b)=>a+b,0)};message('ทอยลูกเต๋าแล้ว กดบันทึกผลลัพธ์เพื่อเก็บไว้ในประวัติ','success');
+    }else if(m==='groups'){
+      if(!s.pool.length){message('ยังไม่มีสมาชิกให้สุ่ม กรุณาเตรียมรายชื่อก่อน','error');return;}
+      const shuffled=shuffle(s.pool),groups=Array.from({length:s.groupCount},()=>[]);shuffled.forEach((item,i)=>groups[i%s.groupCount].push(item));s.pending={type:'groups',groups,items:shuffled};message(`สุ่มแบ่งสมาชิก ${shuffled.length} คน เป็น ${groups.length} กลุ่มแล้ว`,'success');
+    }
+    animateResult();render();if(m==='wheel')startWheelAnimation();
+  }
+  let wheelTimer=null;
+  function drawWheelCanvas(canvas,labels){
+    const ctx=canvas.getContext('2d'),size=canvas.width,cx=size/2,cy=size/2,r=145;ctx.clearRect(0,0,size,size);
+    const opts=(labels&&labels.length?labels:['เพิ่มตัวเลือก']).slice(0,40),n=opts.length,arc=Math.PI*2/n;
+    const palette=['#4169e1','#20a17b','#f1a43b','#8662c5','#e36f78','#3299b8','#8d9e42','#d17d42'];
+    opts.forEach((label,i)=>{const start=-Math.PI/2+i*arc,end=start+arc;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();ctx.fillStyle=palette[i%palette.length];ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(start+arc/2);ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.font=`700 ${n>18?10:n>10?11:13}px Tahoma, sans-serif`;let t=String(label);if(t.length>22)t=t.slice(0,21)+'…';ctx.fillText(t,r-13,0);ctx.restore();
+    });
+    ctx.beginPath();ctx.arc(cx,cy,19,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#dce5ff';ctx.lineWidth=3;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);ctx.fillStyle='#3157d5';ctx.fill();
+  }
+  function startWheelAnimation(){
+    const s=active(),pending=s.pending;if(state.mode!=='wheel'||!pending||pending.type!=='wheel')return;
+    const canvas=$('spinWheelCanvas');if(!canvas)return;const count=Math.max(1,pending.wheelOptions.length);const degrees=360*6-((pending.wheelIndex+.5)*360/count);
+    canvas.style.transition='none';canvas.style.transform='rotate(0deg)';void canvas.offsetWidth;
+    requestAnimationFrame(()=>{canvas.style.transition='transform 4.1s cubic-bezier(.12,.72,.12,1)';canvas.style.transform=`rotate(${degrees}deg)`;});
+    if(wheelTimer)clearTimeout(wheelTimer);wheelTimer=setTimeout(()=>{pending.wheelDone=true;if(state.mode==='wheel'&&active().pending===pending){$('resultMain').textContent=String(pending.items[0].value);$('resultNote').textContent='วงล้อหยุดแล้ว กดบันทึกผลลัพธ์ หรือยกเลิกเพื่อสุ่มใหม่';$('commitBtn').disabled=false;save();}},4200);
+  }
+  function animateResult(){const c=$('resultCard');c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop');}
+  function commit(){
+    const m=state.mode,s=active();if(!s.pending)return;const p=s.pending;if(p.type==='wheel'&&!p.wheelDone){message('กรุณารอให้วงล้อหยุดก่อนบันทึกผล','error');return;}let entry;
+    if(p.type==='draw'||p.type==='wheel'){
+      if(p.removed){const ids=new Set(p.items.map(x=>x.id));s.pool=s.pool.filter(x=>!ids.has(x.id));}
+      entry={type:p.type,items:clone(p.items),removed:p.removed,wheelOptions:p.type==='wheel'?p.wheelOptions:undefined,wheelIndex:p.type==='wheel'?p.wheelIndex:undefined,label:p.items.map(x=>String(x.value)).join(', '),time:Date.now()};
+    }else if(p.type==='shuffle')entry={type:'shuffle',items:clone(p.items),label:`เรียงลำดับใหม่ ${p.items.length} รายการ`,time:Date.now()};
+    else if(p.type==='choices')entry={type:'choices',items:p.items.slice(),label:p.items.join(', '),time:Date.now()};
+    else if(p.type==='dice')entry={type:'dice',dice:p.dice.slice(),sum:p.sum,label:`${p.dice.join(' + ')} = ${p.sum}`,time:Date.now()};
+    else if(p.type==='groups'){
+      s.pool=[];entry={type:'groups',groups:clone(p.groups),items:clone(p.items),groupCount:p.groups.length,label:`แบ่ง ${p.groups.length} กลุ่ม · ${p.items.length} คน`,time:Date.now()};
+    }
+    s.history.push(entry);s.last=entry;s.pending=null;message('บันทึกผลลัพธ์เรียบร้อยแล้ว','success');render();
+  }
+  function cancelPending(){const s=active();if(!s.pending)return;if(wheelTimer){clearTimeout(wheelTimer);wheelTimer=null;}s.pending=null;message('ยกเลิกผลลัพธ์ที่ยังไม่ได้บันทึกแล้ว');render();}
+  function requestUndo(){
+    const s=active();if(!s.pending&&!s.history.length)return;
+    if(s.pending){$('dialogTitle').textContent='ยกเลิกผลลัพธ์ที่รอยืนยัน';$('dialogIcon').textContent='!';$('dialogText').textContent='ต้องการยกเลิกผลลัพธ์ที่สุ่มได้แต่ยังไม่ได้บันทึกใช่หรือไม่?';confirmAction='cancelPending';}
+    else{const last=s.history[s.history.length-1];$('dialogTitle').textContent='ยืนยันการย้อนกลับ';$('dialogIcon').textContent='↶';$('dialogText').textContent=`ต้องการย้อนกลับผลการสุ่มล่าสุด “${last.label}” ใช่หรือไม่?`;confirmAction='undoHistory';}
+    const d=$('confirmDialog');if(d.showModal)d.showModal();else if(window.confirm($('dialogText').textContent))performConfirm();
+  }
+  function performConfirm(){
+    const s=active();if(confirmAction==='cancelPending'){s.pending=null;message('ยกเลิกผลลัพธ์ที่รอยืนยันแล้ว','success');}
+    else if(confirmAction==='undoHistory'&&s.history.length){const item=s.history.pop();if((item.type==='draw'||item.type==='wheel')&&item.removed){const ids=new Set(s.pool.map(x=>x.id));item.items.forEach(x=>{if(!ids.has(x.id))s.pool.push(x);});s.pool.sort((a,b)=>a.index-b.index);}
+      else if(item.type==='groups'){s.pool=s.original.slice();}
+      s.last=s.history.length?s.history[s.history.length-1]:null;message('ย้อนกลับผลการสุ่มล่าสุดเรียบร้อยแล้ว','success');}
+    confirmAction=null;if($('confirmDialog').open)$('confirmDialog').close();render();
+  }
+  function resetSet(){
+    const m=state.mode,s=active();
+    if(m==='numbers'){
+      const start=Number(s.start),end=Number(s.end);if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||end<start||end-start>4999){message('ช่วงตัวเลขไม่ถูกต้อง กรุณาตรวจสอบก่อนเริ่มชุดใหม่','error');return;}
+      const all=Array.from({length:end-start+1},(_,i)=>({id:`num-${start+i}`,value:start+i,index:i}));state.sessions.numbers={start,end,original:all,pool:all.slice(),history:[],pending:null,last:null};
+    }else if(textModes.has(m)){
+      const prefix=m==='names'?'name':m==='wheel'?'wheel':m==='shuffle'?'order':'item';const all=makeItems(parseLines(s.source),prefix);if(!all.length){message('กรุณาเพิ่มข้อมูลอย่างน้อย 1 รายการก่อนเริ่มใหม่','error');return;}state.sessions[m]={source:s.source,original:all,pool:all.slice(),history:[],pending:null,last:null};
+    }else if(m==='groups'){
+      const all=makeItems(parseLines(s.source),'member'),groupCount=Number(s.groupCount);if(!all.length||!Number.isInteger(groupCount)||groupCount<2||groupCount>30){message('กรุณาตรวจสอบรายชื่อและจำนวนกลุ่ม (2–30 กลุ่ม)','error');return;}state.sessions.groups={source:s.source,groupCount,original:all,pool:all.slice(),history:[],pending:null,last:null};
+    }else if(m==='yesno'){
+      if(!String(s.one).trim()||!String(s.two).trim()||s.one===s.two){message('กรุณากำหนดตัวเลือก 2 แบบที่ไม่ซ้ำกัน','error');return;}state.sessions.yesno={one:s.one,two:s.two,history:[],pending:null,last:null};
+    }else if(m==='dice')state.sessions.dice={count:s.count,sides:s.sides,history:[],pending:null,last:null};
+    syncSetup();message('เริ่มชุดนี้ใหม่แล้ว ล้างประวัติเดิมเรียบร้อย','success');render();
+  }
+  function display(v){return state.mode==='numbers'?Number(v).toLocaleString('th-TH'):String(v);}
+  function addChip(parent,text,large=false){const el=document.createElement('span');el.className='result-chip'+(large?' large':'');el.textContent=text;parent.append(el);}
+  function renderResult(s){
+    const pending=s.pending;const entry=pending||s.last;const label=$('resultLabel'),main=$('resultMain'),items=$('resultItems'),note=$('resultNote');items.replaceChildren();main.textContent='—';main.classList.remove('textual');
+    if(!entry){label.textContent='ผลการสุ่ม';main.textContent='พร้อมสุ่ม';note.textContent='เลือกประเภทและตั้งค่าการสุ่มเพื่อเริ่มต้น';return;}
+    const kind=entry.type;label.textContent=pending?'ผลลัพธ์ที่สุ่มได้':'ผลลัพธ์ล่าสุด';
+    if(kind==='wheel'){
+      main.textContent=pending&&!entry.wheelDone?'กำลังหมุน...':String(entry.items[0].value);main.classList.add('textual');
+      const wrap=document.createElement('div');wrap.className='wheel-wrap';const canvas=document.createElement('canvas');canvas.id='spinWheelCanvas';canvas.className='wheel-canvas';canvas.width=320;canvas.height=320;canvas.setAttribute('aria-label','วงล้อสุ่ม');wrap.append(canvas);items.append(wrap);drawWheelCanvas(canvas,entry.wheelOptions||active().original.map(x=>String(x.value)));
+      note.textContent=pending?'เมื่อวงล้อหยุดแล้ว กดบันทึกผลลัพธ์ หรือยกเลิกเพื่อสุ่มใหม่':`ผลที่เลือก: ${entry.items[0].value}`;
+    }else if(kind==='shuffle'){
+      main.textContent=`เรียงใหม่ ${entry.items.length} รายการ`;main.classList.add('textual');const ordered=document.createElement('div');ordered.className='ordered-list';entry.items.forEach((item,i)=>{const row=document.createElement('div');row.className='ordered-row';const n=document.createElement('b');n.textContent=`${i+1}.`;const v=document.createElement('span');v.textContent=String(item.value);row.append(n,v);ordered.append(row);});items.append(ordered);note.textContent=pending?'ตรวจสอบลำดับใหม่ แล้วกดบันทึกผลลัพธ์':`บันทึกลำดับเมื่อ ${new Date(entry.time).toLocaleString('th-TH')}`;
+    }else if(kind==='draw'||kind==='choices'){
+      const vals=entry.items.map(x=>kind==='draw'?display(x.value):String(x));
+      if(vals.length===1){main.textContent=vals[0];main.classList.toggle('textual',state.mode!=='numbers');}
+      else{main.textContent=`${vals.length} รายการ`;vals.forEach(v=>addChip(items,v));}
+      note.textContent=pending?'ตรวจสอบผลแล้วกดบันทึก หรือยกเลิกเพื่อสุ่มใหม่':`บันทึกเมื่อ ${new Date(entry.time).toLocaleString('th-TH')}`;
+    }else if(kind==='dice'){
+      main.textContent=`${entry.sum}`;entry.dice.forEach(v=>{const d=document.createElement('span');d.className='die';d.textContent=v;items.append(d);});const sum=document.createElement('span');sum.className='sum-pill';sum.textContent=`ผลรวม ${entry.sum}`;items.append(sum);note.textContent=`${entry.dice.length} ลูก · ลูกเต๋า ${active().sides} หน้า`;
+    }else if(kind==='groups'){
+      main.textContent=`${entry.groups.length} กลุ่ม`;main.classList.add('textual');const grid=document.createElement('div');grid.className='groups-grid';entry.groups.forEach((group,i)=>{const card=document.createElement('div');card.className='group-card';const h=document.createElement('h4');h.textContent=`กลุ่มที่ ${i+1} (${group.length} คน)`;const ol=document.createElement('ol');group.forEach(member=>{const li=document.createElement('li');li.textContent=member.value;ol.append(li);});card.append(h,ol);grid.append(card);});items.append(grid);note.textContent=pending?'ตรวจสอบการแบ่งกลุ่ม แล้วกดบันทึกผลลัพธ์':`แบ่งสมาชิก ${entry.items.length} คนเรียบร้อยแล้ว`;
+    }
+  }
+  function renderPool(s){const m=state.mode;const title=$('poolTitle'),badge=$('poolBadge'),list=$('poolList');list.replaceChildren();
+    let arr=[],label='รายการ';
+    if(poolModes.has(m)){arr=state.allowRepeat?s.original:s.pool;label=m==='numbers'?'ตัวเลข':m==='names'?'รายชื่อ':m==='wheel'?'ตัวเลือก':'รายการ';}
+    else if(m==='shuffle'){arr=s.original;label='รายการ';}
+    else if(m==='groups'){arr=s.pool;label='สมาชิก';}
+    else if(m==='yesno'){arr=[s.one,s.two];label='ตัวเลือก';}
+    else if(m==='dice'){arr=Array.from({length:Math.min(s.sides,100)},(_,i)=>i+1);label='หน้า';}
+    title.textContent=m==='groups'?'สมาชิกที่นำมาจัดกลุ่ม':modeInfo[m].pool;badge.textContent=`${arr.length} ${label}`;
+    if(!arr.length){const e=document.createElement('span');e.className='empty';e.textContent='ไม่มีรายการให้แสดง';list.append(e);return;}
+    const shown=arr.slice(0,180);shown.forEach(item=>{const c=document.createElement('span');c.className='chip'+(typeof item==='object'&&typeof item.value==='string'?' text':'');c.textContent=typeof item==='object'?display(item.value):String(item);list.append(c);});
+    if(arr.length>shown.length){const more=document.createElement('span');more.className='empty';more.textContent=`และอีก ${arr.length-shown.length} รายการ`;list.append(more);}
+  }
+  function renderHistory(s){const list=$('historyList');list.replaceChildren();$('historyBadge').textContent=`${s.history.length} ครั้ง`;
+    if(!s.history.length){const e=document.createElement('div');e.className='empty';e.textContent='ยังไม่มีประวัติการสุ่ม';list.append(e);}else{
+      s.history.slice().reverse().forEach((entry,reverseIndex)=>{const originalIndex=s.history.length-reverseIndex;const row=document.createElement('div');row.className='history-row';const left=document.createElement('span');left.textContent=`ครั้งที่ ${originalIndex}`;const right=document.createElement('strong');right.textContent=entry.label;const sub=document.createElement('small');sub.className='history-sub';sub.textContent=new Date(entry.time).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});right.append(sub);row.append(left,right);list.append(row);});
+    }
+    $('undoBtn').disabled=!s.pending&&!s.history.length;
+  }
+  function renderStats(s){const m=state.mode;let a,b,c,l1,l2,l3;
+    if(poolModes.has(m)||m==='groups'||m==='shuffle'){
+      a=s.original.length;b=state.allowRepeat&&m!=='groups'?s.original.length:s.pool.length;c=s.history.reduce((n,h)=>n+(h.items?h.items.length:0),0);
+      l1='จำนวนทั้งหมด';l2=(state.allowRepeat&&m!=='groups')?'รายการในชุด':'คงเหลือ';l3='รายการที่บันทึก';
+      if(m==='groups'){b=s.pool.length;c=s.history.length;l2='สมาชิกที่ยังไม่แบ่ง';l3='ครั้งที่แบ่งกลุ่ม';}else if(m==='shuffle'){b='พร้อมสลับ';c=s.history.length;l2='สถานะ';l3='ครั้งที่เรียงใหม่';}
+    }else if(m==='yesno'){a=2;b='∞';c=s.history.length;l1='จำนวนตัวเลือก';l2='สุ่มซ้ำได้';l3='ประวัติ';}
+    else{a=s.count;b=`${s.sides} หน้า`;c=s.history.length;l1='จำนวนลูกเต๋า';l2='จำนวนหน้าต่อลูก';l3='ประวัติ';}
+    $('statLabel1').textContent=l1;$('statLabel2').textContent=l2;$('statLabel3').textContent=l3;$('statValue1').textContent=Number.isFinite(a)?a.toLocaleString('th-TH'):a;$('statValue2').textContent=Number.isFinite(b)?b.toLocaleString('th-TH'):b;$('statValue3').textContent=Number.isFinite(c)?c.toLocaleString('th-TH'):c;
+  }
+  function renderActions(s){const m=state.mode,hasPending=!!s.pending;let canDraw=true;
+    if(poolModes.has(m))canDraw=(state.allowRepeat?s.original.length:s.pool.length)>0;
+    if(m==='groups')canDraw=s.pool.length>0;if(m==='shuffle')canDraw=s.original.length>0;
+    $('drawBtn').disabled=hasPending||!canDraw;
+    $('commitBtn').disabled=!hasPending||(m==='wheel'&&s.pending?.type==='wheel'&&!s.pending.wheelDone);
+    $('cancelBtn').disabled=!hasPending;
+    $('commitBtn').textContent=(poolModes.has(m)&&!state.allowRepeat)?'นำออกและบันทึก':m==='shuffle'?'บันทึกลำดับ':'บันทึกผลลัพธ์';
+    $('drawHelper').textContent=m==='groups'?'สุ่มสมาชิกแล้วกระจายเข้ากลุ่มให้จำนวนใกล้เคียงกัน':m==='wheel'?'วงล้อจะเลือกหนึ่งรายการจากตัวเลือกที่เตรียมไว้':m==='shuffle'?'สลับลำดับทุกรายการโดยไม่ตัดรายการออกจากชุดต้นฉบับ':m==='dice'?'ทอยลูกเต๋าตามจำนวนและจำนวนหน้าที่กำหนด':m==='yesno'?'สุ่มจากตัวเลือกทั้งสองแบบ สามารถสุ่มซ้ำได้':(state.allowRepeat?'โหมดนี้อนุญาตให้รายการเดิมถูกสุ่มซ้ำ':'ระบบจะไม่นำรายการที่บันทึกแล้วกลับมาสุ่มซ้ำ');
+  }
+  function render(){const s=active();renderStats(s);renderPool(s);renderHistory(s);renderResult(s);renderActions(s);save();}
+  function exportCSV(){const s=active(),m=state.mode;let rows=[['ลำดับ','ผลการสุ่ม','เวลา']];s.history.forEach((h,i)=>{const time=new Date(h.time).toLocaleString('th-TH');if(h.type==='groups'){h.groups.forEach((g,gi)=>g.forEach((v,vi)=>rows.push([`ครั้งที่ ${i+1} / กลุ่ม ${gi+1} / ลำดับ ${vi+1}`,v.value,time])));}else if(h.type==='dice')rows.push([i+1,`ลูกเต๋า ${h.dice.join(', ')} ผลรวม ${h.sum}`,time]);else if(h.items)h.items.forEach((v,vi)=>rows.push([s.history.length>1?`${i+1}.${vi+1}`:i+1,typeof v==='object'?v.value:v,time]));});if(rows.length===1){notify('ยังไม่มีประวัติให้ส่งออก');return;}downloadCsv(rows,`randomizer-history-${m}-${new Date().toISOString().slice(0,10)}.csv`);notify('ส่งออกประวัติเป็น CSV แล้ว');}
+  function refreshSavedSets(){
+    const sel=$('savedSetSelect'),current=sel.value;sel.replaceChildren();const first=document.createElement('option');first.value='';first.textContent=state.savedSets.length?'— เลือกชุดข้อมูล —':'— ยังไม่มีชุดข้อมูล —';sel.append(first);
+    state.savedSets.forEach(item=>{const o=document.createElement('option');o.value=item.id;o.textContent=`${item.name} (${modeInfo[item.mode]?.noun||item.mode})`;sel.append(o);});
+    if(state.savedSets.some(x=>x.id===current))sel.value=current;$('loadSetBtn').disabled=!sel.value;$('deleteSetBtn').disabled=!sel.value;
+  }
+  function currentConfig(){const m=state.mode,s=active();if(m==='numbers')return{start:s.start,end:s.end};if(textModes.has(m))return{source:s.source};if(m==='groups')return{source:s.source,groupCount:s.groupCount};if(m==='yesno')return{one:s.one,two:s.two};return{count:s.count,sides:s.sides};}
+  function saveCurrentSet(){
+    const name=$('saveSetName').value.trim();if(!name){notify('กรุณาตั้งชื่อชุดข้อมูลก่อนบันทึก');$('saveSetName').focus();return;}
+    if(active().pending){notify('กรุณาบันทึกหรือยกเลิกผลที่ค้างอยู่ก่อน');return;}if((textModes.has(state.mode)||state.mode==='groups')&&!parseLines(active().source).length){notify('กรุณาเพิ่มรายการก่อนบันทึกชุดข้อมูล');return;}if(state.mode==='wheel'&&parseLines(active().source).length>40){notify('วงล้อรองรับไม่เกิน 40 ตัวเลือก');return;}if(state.mode==='numbers'){const c=currentConfig();if(!Number.isSafeInteger(Number(c.start))||!Number.isSafeInteger(Number(c.end))||Number(c.end)<Number(c.start)||Number(c.end)-Number(c.start)>4999){notify('กรุณาตรวจสอบช่วงตัวเลขก่อนบันทึก');return;}}
+    const set={id:`set-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,name,mode:state.mode,config:currentConfig(),allowRepeat:state.allowRepeat,batch:state.batch,createdAt:Date.now()};
+    state.savedSets.push(set);if(state.savedSets.length>100)state.savedSets.shift();save();refreshSavedSets();$('savedSetSelect').value=set.id;$('loadSetBtn').disabled=false;$('deleteSetBtn').disabled=false;notify(`บันทึกชุด “${name}” แล้ว`);
+  }
+  function loadSavedSet(){
+    const set=state.savedSets.find(x=>x.id===$('savedSetSelect').value);if(!set)return;setMode(set.mode);const c=set.config||{};
+    if(set.mode==='numbers'){$('numberStart').value=c.start??1;$('numberEnd').value=c.end??20;}
+    else if(textModes.has(set.mode))$('textInput').value=c.source||'';
+    else if(set.mode==='groups'){$('groupInput').value=c.source||'';$('groupCount').value=c.groupCount||4;}
+    else if(set.mode==='yesno'){$('choiceOne').value=c.one||'ใช่';$('choiceTwo').value=c.two||'ไม่ใช่';}
+    else if(set.mode==='dice'){$('diceCount').value=c.count||1;$('diceSides').value=c.sides||6;}
+    state.allowRepeat=!!set.allowRepeat;state.batch=Number(set.batch)||1;syncSetup();createSet();refreshSavedSets();$('savedSetSelect').value=set.id;notify(`เรียกใช้ชุด “${set.name}” แล้ว`);
+  }
+  function deleteSavedSet(){const id=$('savedSetSelect').value;if(!id)return;const set=state.savedSets.find(x=>x.id===id);if(!set)return;if(!window.confirm(`ต้องการลบชุด “${set.name}” ใช่หรือไม่?`))return;state.savedSets=state.savedSets.filter(x=>x.id!==id);save();refreshSavedSets();notify('ลบชุดข้อมูลแล้ว');}
+  function csvEscape(v){return '"'+String(v??'').replace(/"/g,'""')+'"';}
+  function downloadCsv(rows,filename){const csv='\uFEFF'+rows.map(r=>r.map(csvEscape).join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function exportCurrentList(){const m=state.mode,s=active();let items=[];if(m==='numbers'){const start=Number(s.start),end=Number(s.end);if(Number.isSafeInteger(start)&&Number.isSafeInteger(end)&&end>=start&&end-start<=4999)items=Array.from({length:end-start+1},(_,i)=>({value:start+i,index:i}));else items=s.original||[];}else if(textModes.has(m)||m==='groups')items=makeItems(parseLines(s.source||''),'export');else if(m==='yesno')items=[s.one,s.two].map((value,index)=>({value,index}));else if(m==='dice')items=Array.from({length:s.sides},(_,i)=>({value:i+1,index:i}));if(!items.length){notify('ไม่มีรายการสำหรับส่งออก');return;}const rows=[['ลำดับ','รายการ'],...items.map((x,i)=>[i+1,x.value])];downloadCsv(rows,`randomizer-list-${m}-${new Date().toISOString().slice(0,10)}.csv`);notify('ส่งออกรายการเป็น CSV สำหรับ Excel แล้ว');}
+  function parseCsv(text){const rows=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(quoted){if(ch==='"'&&text[i+1]==='"'){cell+='"';i++;}else if(ch==='"')quoted=false;else cell+=ch;}else if(ch==='"')quoted=true;else if(ch===','){row.push(cell);cell='';}else if(ch==='\n'){row.push(cell);rows.push(row);row=[];cell='';}else if(ch!=='\r')cell+=ch;}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows;}
+  async function readZipEntry(file, wantedPath){
+    const buffer=await file.arrayBuffer(),bytes=new Uint8Array(buffer),view=new DataView(buffer);let eocd=-1;
+    for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65558);i--){if(view.getUint32(i,true)===0x06054b50){eocd=i;break;}}
+    if(eocd<0)throw new Error('ไฟล์ ZIP ไม่ถูกต้อง');const total=view.getUint16(eocd+10,true),centralOffset=view.getUint32(eocd+16,true);let ptr=centralOffset;
+    for(let n=0;n<total;n++){
+      if(view.getUint32(ptr,true)!==0x02014b50)break;const method=view.getUint16(ptr+10,true),compressedSize=view.getUint32(ptr+20,true),nameLen=view.getUint16(ptr+28,true),extraLen=view.getUint16(ptr+30,true),commentLen=view.getUint16(ptr+32,true),localOffset=view.getUint32(ptr+42,true);
+      const path=new TextDecoder().decode(bytes.slice(ptr+46,ptr+46+nameLen));ptr+=46+nameLen+extraLen+commentLen;if(path!==wantedPath)continue;
+      const localNameLen=view.getUint16(localOffset+26,true),localExtraLen=view.getUint16(localOffset+28,true),dataStart=localOffset+30+localNameLen+localExtraLen,compressed=bytes.slice(dataStart,dataStart+compressedSize);
+      if(method===0)return new TextDecoder().decode(compressed);
+      if(method===8){if(typeof DecompressionStream==='undefined')throw new Error('เบราว์เซอร์ไม่รองรับการอ่านไฟล์ XLSX');const stream=new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return new TextDecoder().decode(await new Response(stream).arrayBuffer());}
+      throw new Error('ไม่รองรับวิธีบีบอัดในไฟล์ XLSX');
+    }
+    return null;
+  }
+  async function readXlsx(file){
+    const workbookXml=await readZipEntry(file,'xl/workbook.xml');if(!workbookXml)throw new Error('ไม่พบข้อมูลสมุดงาน Excel');
+    const parser=new DOMParser(),workbook=parser.parseFromString(workbookXml,'application/xml'),sheet=workbook.getElementsByTagName('sheet')[0];if(!sheet)throw new Error('ไม่พบแผ่นงาน Excel');
+    const relId=sheet.getAttribute('r:id');let sheetPath='xl/worksheets/sheet1.xml';
+    const relXml=await readZipEntry(file,'xl/_rels/workbook.xml.rels');if(relXml&&relId){const rels=parser.parseFromString(relXml,'application/xml');const rel=[...rels.getElementsByTagName('Relationship')].find(x=>x.getAttribute('Id')===relId);if(rel){let target=rel.getAttribute('Target')||'worksheets/sheet1.xml';const full=target.startsWith('/')?target.slice(1):'xl/'+target;const parts=[];full.split('/').forEach(part=>{if(part==='..')parts.pop();else if(part!=='.'&&part)parts.push(part);});sheetPath=parts.join('/');}}
+    const sheetXml=await readZipEntry(file,sheetPath);if(!sheetXml)throw new Error('ไม่พบข้อมูลในแผ่นงานแรก');const doc=parser.parseFromString(sheetXml,'application/xml');
+    const sharedXml=await readZipEntry(file,'xl/sharedStrings.xml'),shared=[];if(sharedXml){const sharedDoc=parser.parseFromString(sharedXml,'application/xml');[...sharedDoc.getElementsByTagName('si')].forEach(si=>shared.push([...si.getElementsByTagName('t')].map(t=>t.textContent).join('')));}
+    const rows=[...doc.getElementsByTagName('row')].map(row=>{const cells=[];[...row.getElementsByTagName('c')].forEach(cell=>{const ref=cell.getAttribute('r')||'A1',letters=(ref.match(/^[A-Z]+/i)||['A'])[0].toUpperCase();let col=0;for(const ch of letters)col=col*26+ch.charCodeAt(0)-64;col--;const type=cell.getAttribute('t'),v=cell.getElementsByTagName('v')[0],inline=cell.getElementsByTagName('is')[0];let value='';if(type==='inlineStr'&&inline)value=inline.textContent;else if(v)value=v.textContent;if(type==='s')value=shared[Number(value)]??'';cells[col]=String(value??'').trim();});return cells;});
+    if(!rows.length)return[];const headers=rows[0].map(x=>String(x||'').trim().toLowerCase());const isHeader=headers.some(x=>/^(ลำดับ|ที่|no\.?|number|รายการ|รายชื่อ|ชื่อ|ชื่อ-นามสกุล|student name|name|item|value|คำถาม)$/i.test(x));let col=headers.findIndex(x=>/^(รายการ|รายชื่อ|ชื่อ|ชื่อ-นามสกุล|student name|name|item|value|คำถาม)$/i.test(x));if(col<0)col=isHeader&&headers.length>1?1:Math.max(0,rows[0].findIndex(x=>String(x||'').trim()));if(isHeader)rows.shift();return rows.map(r=>String(r[col]??'').trim()).filter(Boolean);
+  }
+  async function importListFile(file){
+    const ext=(file.name.split('.').pop()||'').toLowerCase();if(!['xlsx','csv','txt','tsv'].includes(ext)){notify('รองรับไฟล์ Excel (.xlsx), CSV, TXT และ TSV');return;}
+    let values;if(ext==='xlsx')values=await readXlsx(file);else{let text=await file.text();text=text.replace(/^\uFEFF/,'');
+    if(ext==='csv'||ext==='tsv'){
+      const rows=ext==='csv'?parseCsv(text):text.split(/\r?\n/).map(line=>line.split('\t'));
+      if(rows.length){const headers=rows[0].map(x=>String(x).trim().toLowerCase());const headerLike=headers.some(x=>/^(ลำดับ|ที่|no\.?|number|รายการ|รายชื่อ|ชื่อ|ชื่อ-นามสกุล|student name|name|item|value|คำถาม)$/i.test(x));let col=headers.findIndex(x=>/^(รายการ|รายชื่อ|ชื่อ|ชื่อ-นามสกุล|student name|name|item|value|คำถาม)$/i.test(x));if(col<0)col=headerLike&&headers.length>1?1:0;if(headerLike)rows.shift();values=rows.map(r=>String(r[col]??'').trim()).filter(Boolean);}else values=[];
+    }else values=parseLines(text);}
+    if(!values.length){notify('ไม่พบรายการในไฟล์');return;}if(state.mode==='wheel'&&values.length>40){notify('วงล้อรองรับไม่เกิน 40 ตัวเลือก กรุณาลดจำนวนรายการก่อนนำเข้า');return;}
+    if(!textModes.has(state.mode)&&state.mode!=='groups'){notify('เลือกโหมดรายชื่อ รายการ วงล้อ สุ่มเรียงลำดับ หรือแบ่งกลุ่มก่อนนำเข้า');return;}
+    if(state.mode==='groups'){$('groupInput').value=values.join('\n');active().source=$('groupInput').value;updateGroupPreview();}
+    else{$('textInput').value=values.join('\n');active().source=$('textInput').value;updateTextPreview();}
+    save();notify(`นำเข้า ${values.length} รายการแล้ว กดสร้างชุดข้อมูลเพื่อเริ่มใช้งาน`);
+  }
+    async function toggleFullscreen(){try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();}catch(e){notify('เบราว์เซอร์ไม่อนุญาตให้เปิดโหมดเต็มหน้าจอ');}}
+  modeCards.forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+  $('numberStart').addEventListener('input',()=>{active().start=$('numberStart').value===''?'':Number($('numberStart').value);updateNumberPreview();save();});
+  $('numberEnd').addEventListener('input',()=>{active().end=$('numberEnd').value===''?'':Number($('numberEnd').value);updateNumberPreview();save();});
+  $('textInput').addEventListener('input',()=>{active().source=$('textInput').value;updateTextPreview();save();});
+  $('groupInput').addEventListener('input',()=>{active().source=$('groupInput').value;updateGroupPreview();save();});
+  $('groupCount').addEventListener('input',()=>{active().groupCount=Number($('groupCount').value)||0;updateGroupPreview();save();});
+  $('choiceOne').addEventListener('input',()=>{active().one=$('choiceOne').value;save();});$('choiceTwo').addEventListener('input',()=>{active().two=$('choiceTwo').value;save();});
+  $('diceCount').addEventListener('change',()=>{active().count=Number($('diceCount').value);updateDicePreview();save();});$('diceSides').addEventListener('change',()=>{active().sides=Number($('diceSides').value);updateDicePreview();save();});
+  $('allowRepeat').addEventListener('change',e=>{state.allowRepeat=e.target.checked;render();});$('batchCount').addEventListener('change',e=>{state.batch=Number(e.target.value)||1;save();});
+  $('createBtn').addEventListener('click',createSet);$('resetBtn').addEventListener('click',resetSet);$('drawBtn').addEventListener('click',draw);$('commitBtn').addEventListener('click',commit);$('cancelBtn').addEventListener('click',cancelPending);$('undoBtn').addEventListener('click',requestUndo);
+  $('dialogConfirm').addEventListener('click',performConfirm);$('dialogCancel').addEventListener('click',()=>{$('confirmDialog').close();confirmAction=null;});$('confirmDialog').addEventListener('click',e=>{if(e.target===$('confirmDialog')){$('confirmDialog').close();confirmAction=null;}});
+  $('exportBtn').addEventListener('click',exportCSV);$('exportListBtn').addEventListener('click',exportCurrentList);$('importBtn').addEventListener('click',()=>{if(!textModes.has(state.mode)&&state.mode!=='groups'){notify('เลือกโหมดที่รับรายการก่อนนำเข้า');return;}$('importFile').click();});$('importFile').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(file){try{await importListFile(file);}catch(err){notify(err&&err.message?err.message:'อ่านไฟล์ไม่สำเร็จ กรุณาตรวจสอบไฟล์อีกครั้ง');}e.target.value='';}});$('saveSetBtn').addEventListener('click',saveCurrentSet);$('loadSetBtn').addEventListener('click',loadSavedSet);$('deleteSetBtn').addEventListener('click',deleteSavedSet);$('savedSetSelect').addEventListener('change',()=>{const on=!!$('savedSetSelect').value;$('loadSetBtn').disabled=!on;$('deleteSetBtn').disabled=!on;});$('printBtn').addEventListener('click',()=>window.print());$('fullscreenBtn').addEventListener('click',toggleFullscreen);
+  load();refreshSavedSets();setMode(state.mode);
+})();
+</script>
+</body>
+</html>
